@@ -34,7 +34,6 @@ def plot_graph(months, data_with_rent, data_without_rent, acctual_value, acctual
                     name='Rent'))
 
     fig.show()
-
     fig2 = go.Figure()
 
     fig2.add_trace(go.Scatter(x=months, y=data_adjust_rent,
@@ -49,7 +48,7 @@ def plot_graph(months, data_with_rent, data_without_rent, acctual_value, acctual
                     mode='lines+markers',
                     name='New Rent'))
 
-    #fig2.show()
+    fig2.show()
 
 def growth_with_rent(months_length):
     data_exponential = []
@@ -112,7 +111,7 @@ def adjust_winnings(months_length):
     current_amount = 0
     exponential_growth = 1.01   # 27000kr/år = 2250kr/mån
     adjustment = 0
-    last_amount = 6315.167
+    last_amount = 0
     total_rent = 0
 
     while i < months_length:
@@ -121,9 +120,9 @@ def adjust_winnings(months_length):
         elif i == 36:
             start_amount = 0
 
-        current_amount = current_amount*exponential_growth + start_amount
-        change_amount = (current_amount - last_amount - start_amount) * 0.2
-
+        current_amount *= exponential_growth
+        change_amount = (current_amount - last_amount) * 0.2
+        current_amount += start_amount
         current_amount -= change_amount
         total_rent += change_amount
 
