@@ -1,17 +1,18 @@
 import plotly.graph_objects as go
 import amount
+import variables
 
-def get_months(months_length):
+def get_months():
     i = 0
     months = []
 
-    while i < months_length:
+    while i < variables.months:
         months.append(i)
         i+=1
 
     return months
 
-def plot_graph(months, tax_AF_list, tax_ISK_list, amount_AF_list, amount_ISK_list):
+def plot_graph(months, tax_AF_list, tax_ISK_list, amount_AF_list, amount_ISK_list, amount_AF_EndTax_List):
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(x=months, y=tax_AF_list,
@@ -29,49 +30,70 @@ def plot_graph(months, tax_AF_list, tax_ISK_list, amount_AF_list, amount_ISK_lis
     fig.add_trace(go.Scatter(x=months, y=amount_ISK_list,
                     mode='lines+markers',
                     name='ISK'))
+    
+    fig.add_trace(go.Scatter(x=months, y=amount_AF_EndTax_List,
+                    mode='lines+markers',
+                    name='AF End Tax'))
 
     fig.show()
 
-def ISK_AF(length_month):
-
-    i = 0
+def isk_calculator():
     amount_ISK = amount.money
-    amount_AF = amount.money
-    tax_AF = 0
     tax_ISK = 0
-    avkastning = 1.20
+    i = 0
 
-    tax_AF_list = []
-    tax_ISK_list = []
-    amount_AF_list = []
     amount_ISK_list = []
+    tax_ISK_list = []
 
-    while i < length_month:
-        tax_AF += (amount_AF * avkastning - amount_AF) * 0.3
-        tax_ISK += amount_ISK * avkastning * 0.00375
+    while i < variables.months:
 
-        amount_AF = amount_AF * 1.12 - (amount_AF * 1.12 - amount_AF) * 0.3
-        #amount_AF *= avkastning
-        amount_ISK = amount_ISK * avkastning - amount_ISK * avkastning * 0.00375
+        if i % 12 == 0:
+            current_tax = amount_ISK * variables.roi * variables.tax_ISK
+        else:
+            current_tax = 0
 
-        tax_AF_list.append(tax_AF)
+        tax_ISK += current_tax
+        amount_ISK = amount_ISK * variables.roi - current_tax
+
         tax_ISK_list.append(tax_ISK)
-        amount_AF_list.append(amount_AF)
         amount_ISK_list.append(amount_ISK)
 
         i+=1
     
-    #amount_AF_list[-1] = amount_AF - tax_AF
-    
-    print(round(amount_ISK_list[-1] / amount_AF_list[-1] - 1, 3))
+    return tax_ISK_list, amount_ISK_list
 
-    return tax_AF_list, tax_ISK_list, amount_AF_list, amount_ISK_list
+def af_calculator():
+    amount_AF = amount.money
+    amount_AF_EndTax = amount.money
+    tax_AF = 0
+    i = 0
+    
+    tax_AF_list = []
+    amount_AF_list = []
+    amount_AF_EndTax_List = []
+    
+    while i < variables.months:
+
+        current_tax = (amount_AF * variables.roi - amount_AF) * variables.tax_AF
+        tax_AF += current_tax
+        amount_AF = amount_AF * variables.roi - current_tax
+        amount_AF_EndTax = amount_AF_EndTax * variables.roi
+
+        tax_AF_list.append(tax_AF)
+        amount_AF_list.append(amount_AF)
+        amount_AF_EndTax_List.append(amount_AF_EndTax)
+
+        i+=1
+    
+    amount_AF_EndTax_List[-1] = amount_AF_EndTax_List[-1] - ((amount_AF_EndTax_List[-1] - amount.money) * variables.tax_AF)
+
+    return tax_AF_list, amount_AF_list, amount_AF_EndTax_List
 
 def main():
-    LENGTH = 15
-    MONTHS = get_months(LENGTH)
-    tax_AF_list, tax_ISK_list, amount_AF_list, amount_ISK_list = ISK_AF(LENGTH)
-    plot_graph(MONTHS, tax_AF_list, tax_ISK_list, amount_AF_list, amount_ISK_list)
+    MONTHS = get_months()
+    TAX_AF_LIST, AMOUNT_AF_LIST, AMOUNT_AF_ENDTAX_LIST = af_calculator()
+    TAX_ISK_LIST, AMOUNT_ISK_LIST = isk_calculator()
+    plot_graph(MONTHS, TAX_AF_LIST, TAX_ISK_LIST, AMOUNT_AF_LIST, AMOUNT_ISK_LIST, AMOUNT_AF_ENDTAX_LIST)
 
 if __name__ == '__main__':
     main()

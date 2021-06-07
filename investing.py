@@ -55,7 +55,7 @@ def growth_with_rent(months_length):
     start_amount = 6315.167     # 75782/år = 6315.167kr/mån (CSN)
     current_amount = 0
     exponential_growth = 1.01
-    rent = amount.rent                 # 27000kr/år = 2250kr/mån
+    rent = amount.rent
     adjustment = 0
 
     while i < months_length:
