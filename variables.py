@@ -2,6 +2,8 @@
 General Variables
 '''
 months = 40 * 12
+csn = 6315.167          #75782/år = 6315.167kr/mån (CSN)
+csn_length = 24
 
 '''
 Return Variables

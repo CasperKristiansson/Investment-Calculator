@@ -1,96 +1,80 @@
 import plotly.graph_objects as go
 import amount
+import variables
 
 def get_months(months_length):
     i = 0
     months = []
 
-    while i < months_length:
+    while i < variables.months:
         months.append(i)
         i+=1
 
     return months
 
-def plot_graph(months, tax_AF_list, tax_ISK_list, amount_AF_list, amount_ISK_list):
-    fig = go.Figure()
+def plot_graph(months):
+    fig2 = go.Figure()
 
-    fig.add_trace(go.Scatter(x=months, y=tax_AF_list,
+    fig2.add_trace(go.Scatter(x=months, y=data_adjust_rent,
                     mode='lines+markers',
-                    name='Tax AF'))
+                    name='Acctual Value Adjusted Rent'))
 
-    fig.add_trace(go.Scatter(x=months, y=tax_ISK_list,
+    fig2.add_trace(go.Scatter(x=months, y=acctual_adjust,
                     mode='lines+markers',
-                    name='Tax ISK'))
+                    name='Acctual Value'))
 
-    fig.add_trace(go.Scatter(x=months, y=amount_AF_list,
+    fig2.add_trace(go.Scatter(x=months, y=adjust_rent,
                     mode='lines+markers',
-                    name='AF'))
+                    name='New Rent'))
 
-    fig.add_trace(go.Scatter(x=months, y=amount_ISK_list,
-                    mode='lines+markers',
-                    name='ISK'))
+    fig2.show()
 
-    fig.show()
-    # fig2 = go.Figure()
+def growth_with_rent():
+    start_amount = variables.csn
+    rent = amount.rent  
+    current_amount = 0
+    adjustment = 0
+    i = 0
 
-    # fig2.add_trace(go.Scatter(x=months, y=data_adjust_rent,
-    #                 mode='lines+markers',
-    #                 name='Acctual Value Adjusted Rent'))
-
-    # fig2.add_trace(go.Scatter(x=months, y=acctual_adjust,
-    #                 mode='lines+markers',
-    #                 name='Acctual Value'))
-
-    # fig2.add_trace(go.Scatter(x=months, y=adjust_rent,
-    #                 mode='lines+markers',
-    #                 name='New Rent'))
-
-    # fig2.show()
-
-def growth_with_rent(months_length):
     data_exponential = []
     acctual_value = []
     rent_data = []
-    i = 0
-    start_amount = 6315.167     # 75782/år = 6315.167kr/mån (CSN)
-    current_amount = 0
-    exponential_growth = 1.01
-    rent = amount.rent
-    adjustment = 0
 
-    while i < months_length:
-        current_amount = current_amount*exponential_growth + start_amount - rent
+    while i < variables.months:
+        current_amount = current_amount * variables.roi + start_amount - rent
         data_exponential.append(current_amount)
 
-        if i < 36:
+        if i < variables.csn_length:
             adjustment += start_amount
-        elif i == 36:
+
+        elif i == variables.csn_length:
             start_amount = 0
             rent = 0
-        acctual_value.append(current_amount - adjustment)
 
+        acctual_value.append(current_amount - adjustment)
         rent_data.append((-rent*(i+1)))
 
         i+=1
 
     return data_exponential, acctual_value, rent_data
 
-def growth_without_rent(months_length):
+def growth_without_rent():
+    start_amount = variables.csn
+    exponential_growth = variables.roi
+    adjustment = 0
+    current_amount = 0
+    i = 0
+
     data_exponential = []
     acctual_value = []
-    i = 0
-    start_amount = 6315.167     # 75782/år = 6315.167kr/mån (CSN)
-    current_amount = 0
-    exponential_growth = 1.01
-    adjustment = 0
 
-    while i < months_length:
+    while i < variables.months:
         current_amount = current_amount*exponential_growth + start_amount
         data_exponential.append(current_amount)
 
-        if i < 36:
+        if i < variables.csn_length:
             adjustment += start_amount
-        elif i == 36:
+        elif i == variables.csn_length:
             start_amount = 0
 
         acctual_value.append(current_amount - adjustment)
@@ -99,22 +83,23 @@ def growth_without_rent(months_length):
 
     return data_exponential, acctual_value
 
-def adjust_winnings(months_length):
-    data_exponential = []
-    acctual_value = []
-    rent_data = []
-    i = 0
-    start_amount = 6315.167     # 75782/år = 6315.167kr/mån (CSN)
+def adjust_winnings():
+    exponential_growth = variables.roi
+    start_amount = variables.csn
     current_amount = 0
-    exponential_growth = 1.01   # 27000kr/år = 2250kr/mån
     adjustment = 0
     last_amount = 0
     total_rent = 0
+    i = 0
 
-    while i < months_length:
-        if i < 36:
+    data_exponential = []
+    acctual_value = []
+    rent_data = []
+
+    while i < variables.months:
+        if i < variables.csn_length:
             adjustment += start_amount
-        elif i == 36:
+        elif i == variables.csn_length:
             start_amount = 0
 
         current_amount *= exponential_growth
@@ -134,12 +119,11 @@ def adjust_winnings(months_length):
     return data_exponential, acctual_value, rent_data
 
 def main():
-    LENGTH = 15
-    MONTHS = get_months(LENGTH)
-    #DATA_WITH_RENT, ACCTUAL_VALUE_RENT, RENT = growth_with_rent(LENGTH)
-    #DATA_WITHOUT_RENT, ACCTUAL_VALUE = growth_without_rent(LENGTH)
-    #DATA_ADJUST_RENT, ACCTUAL_ADJUST, ADJUST_RENT = adjust_winnings(LENGTH)
-    plot_graph(MONTHS, tax_AF_list, tax_ISK_list, amount_AF_list, amount_ISK_list)
+    MONTHS = get_months()
+    #DATA_WITH_RENT, ACCTUAL_VALUE_RENT, RENT = growth_with_rent()
+    #DATA_WITHOUT_RENT, ACCTUAL_VALUE = growth_without_rent()
+    #DATA_ADJUST_RENT, ACCTUAL_ADJUST, ADJUST_RENT = adjust_winnings()
+    plot_graph(MONTHS)
 
 if __name__ == '__main__':
     main()
