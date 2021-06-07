@@ -1,3 +1,4 @@
 environment
 .vscode
 .pytest_cache
+amount.py

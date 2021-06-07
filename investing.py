@@ -1,4 +1,5 @@
 import plotly.graph_objects as go
+import amount
 
 def get_months(months_length):
     i = 0
@@ -51,10 +52,10 @@ def growth_with_rent(months_length):
     acctual_value = []
     rent_data = []
     i = 0
-    start_amount = 6315.167     # 75782/år = 6315.167kr/mån
+    start_amount = 6315.167     # 75782/år = 6315.167kr/mån (CSN)
     current_amount = 0
     exponential_growth = 1.01
-    rent = 2250                 # 27000kr/år = 2250kr/mån
+    rent = amount.rent                 # 27000kr/år = 2250kr/mån
     adjustment = 0
 
     while i < months_length:
@@ -78,7 +79,7 @@ def growth_without_rent(months_length):
     data_exponential = []
     acctual_value = []
     i = 0
-    start_amount = 6315.167     # 75782/år = 6315.167kr/mån
+    start_amount = 6315.167     # 75782/år = 6315.167kr/mån (CSN)
     current_amount = 0
     exponential_growth = 1.01
     adjustment = 0
@@ -103,7 +104,7 @@ def adjust_winnings(months_length):
     acctual_value = []
     rent_data = []
     i = 0
-    start_amount = 6315.167     # 75782/år = 6315.167kr/mån
+    start_amount = 6315.167     # 75782/år = 6315.167kr/mån (CSN)
     current_amount = 0
     exponential_growth = 1.01   # 27000kr/år = 2250kr/mån
     adjustment = 0
@@ -135,11 +136,11 @@ def adjust_winnings(months_length):
 def ISK_AF(length_month):
 
     i = 0
-    amount_ISK = 550000
-    amount_AF = 550000
+    amount_ISK = amount.money
+    amount_AF = amount.money
     tax_AF = 0
     tax_ISK = 0
-    avkastning = 1.12
+    avkastning = 1.20
 
     tax_AF_list = []
     tax_ISK_list = []
