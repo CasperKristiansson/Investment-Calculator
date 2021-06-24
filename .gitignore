@@ -2,3 +2,6 @@ environment
 .vscode
 .pytest_cache
 amount.py
+__pycache__
+variables.py
+__pycache__

@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 import amount
 import variables
+import ad_calculator
 
 def get_months():
     i = 0
